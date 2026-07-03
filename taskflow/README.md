@@ -1,6 +1,14 @@
-# 🚀 TaskFlow - Django Todo App
+# 🚀 TaskFlow - Django Task Management App
 
-TaskFlow is a modern Todo application built with Django that helps users organize and manage their daily tasks efficiently. It includes authentication, task management, searching, filtering, sorting, pagination, and a clean user interface.
+TaskFlow is a modern task management web application built with Django that helps users organize and manage their daily tasks efficiently. It includes authentication, task management, searching, filtering, sorting, pagination, and a clean user interface.
+
+---
+
+## 🌐 Live Demo
+
+https://taskflow-vh1v.onrender.com
+
+---
 
 ## ✨ Features
 
@@ -19,6 +27,8 @@ TaskFlow is a modern Todo application built with Django that helps users organiz
 - Pagination
 - User-specific Task Management
 
+---
+
 ## 🛠️ Technologies Used
 
 - Python
@@ -26,15 +36,16 @@ TaskFlow is a modern Todo application built with Django that helps users organiz
 - HTML5
 - CSS3
 - SQLite
+- Gunicorn
+- WhiteNoise
+- Render
 
-## 📷 Screenshots
-
-(Add screenshots here after deployment.)
+---
 
 ## 🚀 Installation
 
 ```bash
-git clone https://github.com/yourusername/TaskFlow.git
+git clone https://github.com/BIwashbhatarai/TaskFlow.git
 
 cd TaskFlow
 
@@ -50,11 +61,22 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-Open:
+Open your browser and visit:
 
 ```
 http://127.0.0.1:8000/
 ```
+
+---
+
+## 🚀 Deployment
+
+- Hosted on Render
+- Gunicorn used as the WSGI server
+- WhiteNoise used to serve static files
+- Production configuration with `ALLOWED_HOSTS` and `CSRF_TRUSTED_ORIGINS`
+
+---
 
 ## 📌 Future Improvements
 
@@ -64,6 +86,8 @@ http://127.0.0.1:8000/
 - REST API
 - Docker Support
 
+---
+
 ## 👨‍💻 Author
 
-Tilak Bhattarai
+**Tilak Bhattarai**
