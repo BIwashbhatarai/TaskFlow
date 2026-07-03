@@ -1,0 +1,35 @@
+{% extends "tasks/base.html" %}
+
+{% block content %}
+
+<div class="form-card">
+    <h2>Sign In</h2>
+
+{% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="alert {{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+    <form method="POST" class="task-form">
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <div class="form-actions">
+            <button type="submit" class="submit-btn">
+                Sign In
+            </button>
+
+            <a href="{% url 'sign_up' %}" class="cancel-btn">
+                Don't have an account?
+            </a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,183 @@
+{% extends "tasks/base.html" %}
+
+{% block title %}Task List{% endblock %}
+
+{% block content %}
+
+<h1>Task List</h1>
+
+{% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="alert {{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<form method="GET" class="filter-form">
+    <div class="filter-buttons">
+        <button type="submit" name="filter" value="all">All</button>
+        <button type="submit" name="filter" value="completed">Completed</button>
+        <button type="submit" name="filter" value="pending">Pending</button>
+        <button type="submit" name="filter" value="high">High Priority</button>
+    </div>
+
+    <a href="{% url 'add_task' %}" class="add-task-btn">+ Add Task</a>
+</form>
+
+<div class="stats-container">
+    <div class="stat-card">
+        <h3>Total Tasks</h3>
+        <p>{{total_tasks}}</p>
+    </div>
+
+    <div class="stat-card completed-card">
+        <h3>Completed</h3>
+        <p>{{completed_tasks}}</p>
+    </div>
+
+    <div class="stat-card pending-card">
+        <h3>Pending</h3>
+        <p>{{pending_tasks}}</p>
+    </div>
+
+    <div class="stat-card high-card">
+        <h3>High Priority</h3>
+        <p>{{High_priority_tasks}}</p>
+    </div>
+</div>
+
+    {% if completed_tasks > 0 %}
+    <div class="progress-bar">
+        <div class="progress-bar-inner" style="width: {{ progress }}%;"></div>
+    </div>
+    {% endif %}
+
+    {% if total_tasks > 0 %}
+    <form method="GET" class="search-form">
+        {% if request.GET.filter %}
+            <input type="hidden" name="filter" value="{{ request.GET.filter }}">
+        {% endif %}
+        <input type="text" name="query" value="{{ search|default:'' }}" placeholder="🔍 Search tasks...">
+        <button type="submit">Search</button>
+
+        <select name="sort" class="sort-select">
+            <option value="">Sort By</option>
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="due">Due Date</option>
+            <option value="az">A - Z</option>
+            <option value="za">Z - A</option>
+        </select>
+
+        <button type='submit'>Apply</button>
+    </form>
+    {% endif %}
+
+{% for task in tasks %}
+    <div class="task">
+        <div class='left-div'>
+            <div class="task-header">
+                <div class="task-title">{{ task.title }}</div>
+                <div class="task-category">{{task.category_choices}}</div>
+            </div>
+
+        <div class="task-desc">{{ task.description }}</div>
+
+        {% if task.is_completed %}
+            <span class="badge completed">Completed</span>
+        {% else %}
+            <span class="badge pending">Pending</span>
+        {% endif %}
+        {% if not task.is_completed %}
+            {% if task.status == "Overdue" %}
+                <span class="badge overdue">{{ task.status }}</span>
+
+            {% elif task.status == "Due Today" %}
+                <span class="badge due-today">{{ task.status }}</span>
+
+            {% elif task.status == "Upcoming" %}
+                <span class="badge upcoming">{{ task.status }}</span>
+
+            {% elif task.status == "Completed" %}
+                <span class="badge completed">{{ task.status }}</span>
+
+            {% else %}
+                <span class="badge">{{ task.status }}</span>
+            {% endif %}
+            {% if task.priority_choices == "High" %}
+                <span class="badge priority-{{task.priority_choices | lower}}">{{task.priority_choices}}</span>
+            {% elif task.priority_choices == "Medium" %}
+                <span class="badge priority-{{task.priority_choices | lower}}">{{task.priority_choices}}</span>
+            {% elif task.priority_choices == "Low" %}
+                <span class="badge priority-{{task.priority_choices | lower}}">{{task.priority_choices}}</span>
+            {% else %}
+                <span class="badge priority-{{task.priority_choices | lower}}">{{task.priority_choices}}</span>
+            {% endif %}
+            {% endif %}
+
+        </div>
+
+        <div class='right-div'>
+            <form method="POST" action="{% url 'delete_task' task.id %}" onsubmit="return confirm('Delete this task?');">
+                {% csrf_token %}
+                <button type="submit" class="delete-btn" style="border:none; cursor:pointer;">Delete</button>
+            </form>
+
+            <a class='task-edit' href="{% url 'edit_task' task.id %}">
+                Edit
+            </a>
+
+            <form method="POST" action="{% url 'completed_task' task.id %}">
+                {% csrf_token %}
+                <button type="submit" style="background:none; border:none; padding:0; cursor:pointer;">
+                    {% if task.is_completed %}
+                        <span class='badge pending'>Mark as Pending</span>
+                    {% else %}
+                        <span class='badge completed'>Mark as Completed</span>
+                    {% endif %}
+                </button>
+            </form>
+        </div>
+
+    </div>
+    {% empty %}
+    <div class="empty-state">
+    <div class="empty-header">
+
+        <a href="{% url 'task_list' %}" class="back-btn">
+            ← Back to Tasks
+        </a>
+
+        <h2>📋 No Tasks Found</h2>
+    </div>
+
+    <p>You don't have any tasks yet, or your search didn't match any tasks.</p>
+
+    <a href="{% url 'add_task' %}" class="add-task-btn">
+        + Add Your First Task
+    </a>
+    </div>
+    {% endfor %}
+
+    <div class="pagination">
+
+    {% if tasks.has_previous %}
+        <a href="?page=1{% if search %}&query={{ search }}{% endif %}{% if request.GET.filter %}&filter={{ request.GET.filter }}{% endif %}">First</a>
+        <a href="?page={{ tasks.previous_page_number }}{% if search %}&query={{ search }}{% endif %}{% if request.GET.filter %}&filter={{ request.GET.filter }}{% endif %}">Previous</a>
+    {% endif %}
+
+    <span>
+        Page {{ tasks.number }} of {{ tasks.paginator.num_pages }}
+    </span>
+
+    {% if tasks.has_next %}
+        <a href="?page={{ tasks.next_page_number }}{% if search %}&query={{ search }}{% endif %}{% if request.GET.filter %}&filter={{ request.GET.filter }}{% endif %}">Next</a>
+        <a href="?page={{ tasks.paginator.num_pages }}{% if search %}&query={{ search }}{% endif %}{% if request.GET.filter %}&filter={{ request.GET.filter }}{% endif %}">Last</a>
+    {% endif %}
+
+</div>
+
+{% endblock %}
