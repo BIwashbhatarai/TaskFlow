@@ -25,7 +25,10 @@ SECRET_KEY = "django-insecure-+%mbr@pov1-c%x7d7ult9v*av%!_5fbz!d3%u(cd@79+gh%6g_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["*"]
+CSRF_TRUSTED_ORIGINS = [
+    "https://taskflow-vh1v.onrender.com",
+]
 
 
 # Application definition
